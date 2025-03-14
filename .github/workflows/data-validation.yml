@@ -25,7 +25,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-dev python3.12-venv libgomp1
+        sudo apt-get install -y python3-dev python3.12-venv libgomp1 unzip
 
     - name: Install Java for PySpark
       uses: actions/setup-java@v3
@@ -42,12 +42,16 @@ jobs:
     - name: Prepare data directory
       run: |
         mkdir -p input_data
-        # Copy test data from repository or download
+        # Validate test data before processing
         if [ -f data/test1.xlsx ]; then
+          echo "Verifying local Excel file integrity..."
+          unzip -t data/test1.xlsx || { echo "Corrupted Excel file in repository!"; exit 1; }
           cp -v data/test1.xlsx input_data/
         else
           echo "No local data file found, attempting download..."
-          curl -o input_data/test1.xlsx https://example.com/test1.xlsx || exit 1  # Replace with actual data source URL
+          curl -o input_data/test1.xlsx https://example.com/test1.xlsx || exit 1
+          echo "Verifying downloaded Excel file integrity..."
+          unzip -t input_data/test1.xlsx || { echo "Downloaded file is corrupted!"; exit 1; }
         fi
 
     - name: Create reports directory
@@ -60,6 +64,13 @@ jobs:
         echo "Current directory structure:"
         ls -R
         python scripts/data_validation.py --input input_data/test1.xlsx --output reports/
+        
+        # Workaround for potential script output directory issue
+        if [ -d input_data/reports ]; then
+          echo "Moving reports from input_data/reports to main reports directory"
+          mv input_data/reports/* reports/ || true
+        fi
+
         echo "Generated reports:"
         ls -l reports/
         if [ ! -f reports/data_quality_report.xlsx ] || [ ! -f reports/data_quality_report.txt ]; then
