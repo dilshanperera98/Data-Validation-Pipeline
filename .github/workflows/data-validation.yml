@@ -32,7 +32,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '11'
-        
+          
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
@@ -97,4 +97,3 @@ jobs:
 
 
 
-          
