@@ -3,6 +3,20 @@ import pandas as pd
 import numpy as np
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
+import zipfile
+
+def is_valid_xlsx(file_path):
+    """Check if the file is a valid .xlsx file by trying to open it as a ZIP archive."""
+    try:
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            # Check if it contains the expected structure for an .xlsx file
+            file_list = zip_ref.namelist()
+            if 'xl/workbook.xml' in file_list:
+                return True
+            else:
+                return False
+    except zipfile.BadZipFile:
+        return False
 
 def read_excel(file_path):
     """Read Excel file into Spark DataFrame with proper null handling"""
@@ -10,7 +24,12 @@ def read_excel(file_path):
         .appName("DataValidation") \
         .config("spark.sql.execution.arrow.pyspark.enabled", "false") \
         .getOrCreate()
-    
+
+    # Check if the file is a valid .xlsx file
+    if not is_valid_xlsx(file_path):
+        print(f"Error: The file {file_path} is not a valid .xlsx file.")
+        sys.exit(1)
+
     try:
         # Try to read the file with pandas
         pandas_df = pd.read_excel(file_path, dtype=str, engine='openpyxl')  # Specify the engine
@@ -23,14 +42,14 @@ def read_excel(file_path):
 
     # Replace NaN with None for proper null handling
     pandas_df = pandas_df.replace({np.nan: None})
-    
+
     # Create explicit schema - all string types initially
     fields = [StructField(str(col_name), StringType(), True) for col_name in pandas_df.columns]
     schema = StructType(fields)
-    
+
     # Convert to Spark DataFrame with explicit schema
     spark_df = spark.createDataFrame(pandas_df, schema=schema)
-    
+
     return spark_df, pandas_df
 
 def validate_data(spark_df, pandas_df):
