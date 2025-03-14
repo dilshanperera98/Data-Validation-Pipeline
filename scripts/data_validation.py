@@ -29,10 +29,10 @@ def is_valid_xlsx(file_path):
         return False
 
 def read_excel(file_path):
-    """Read an Excel file and return both Pandas DataFrame and Spark DataFrame."""
+    """Read an Excel file and return a Pandas DataFrame."""
     if not is_valid_xlsx(file_path):
         logging.error(f"Invalid .xlsx file: {file_path}")
-        return None, None
+        return None  # Return None if the file is invalid
 
     try:
         # Load Excel using pandas
@@ -40,7 +40,7 @@ def read_excel(file_path):
         return pandas_df
     except Exception as e:
         logging.error(f"Error while reading the Excel file {file_path}: {e}")
-        return None, None
+        return None
 
 def main(input_file):
     """Main function for validating the Excel file and processing it."""
