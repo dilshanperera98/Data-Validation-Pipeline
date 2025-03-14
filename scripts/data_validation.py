@@ -7,15 +7,19 @@ import subprocess
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, count, when, regexp_replace
 from pyspark.sql.types import FloatType, StringType, StructField, StructType
+
+# Check if distutils is installed, otherwise install it
 try:
     from distutils.version import LooseVersion
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools"])
     from distutils.version import LooseVersion
+
+# Command-line argument parsing
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', required=True)
 parser.add_argument('--output', required=True)
-args = parser.parse_args()    
+args = parser.parse_args()
 
 def read_excel(file_path):
     """Read Excel file into Spark DataFrame with proper null handling"""
@@ -24,8 +28,8 @@ def read_excel(file_path):
         .config("spark.sql.execution.arrow.pyspark.enabled", "false") \
         .getOrCreate()
     
-    # Read with pandas
-    pandas_df = pd.read_excel(file_path, dtype=str)
+    # Read with pandas using the openpyxl engine explicitly
+    pandas_df = pd.read_excel(file_path, dtype=str, engine='openpyxl')  # Specify the engine
     
     # Replace NaN with None for proper null handling
     pandas_df = pandas_df.replace({np.nan: None})
@@ -154,8 +158,8 @@ if __name__ == "__main__":
     #input_file = "/Users/dilshanperera/Desktop/data_quality_pipeline/input_data/test1.xlsx"
     # Change this in your main function
     input_file = "input_data/test1.xlsx"
-    main(input_file) 
+    main(input_file)
 
 
 
-
+# Run the script
