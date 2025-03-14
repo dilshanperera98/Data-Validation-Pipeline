@@ -25,7 +25,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-distutils
+        sudo apt-get install -y python3-dev python3.12-venv
 
     - name: Install Java for PySpark
       uses: actions/setup-java@v3
@@ -42,9 +42,9 @@ jobs:
     - name: Prepare data directory
       run: |
         mkdir -p input_data
-        # Copy test data from repository or download from external source
+        # Copy test data from repository
         cp -v data/test1.xlsx input_data/ || echo "No local data file found"
-        # Alternative download command (uncomment and modify if needed)
+        # Alternative download (uncomment if needed):
         # curl -o input_data/test1.xlsx https://your-data-source/test1.xlsx
 
     - name: Create reports directory
