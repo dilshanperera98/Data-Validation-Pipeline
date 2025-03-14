@@ -1,9 +1,16 @@
 import pandas as pd
 import numpy as np
 import os
+import sys
+import subprocess
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, count, when, regexp_replace
 from pyspark.sql.types import FloatType, StringType, StructField, StructType
+try:
+    from distutils.version import LooseVersion
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools"])
+    from distutils.version import LooseVersion
 
 def read_excel(file_path):
     """Read Excel file into Spark DataFrame with proper null handling"""
