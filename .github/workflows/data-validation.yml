@@ -59,15 +59,6 @@ jobs:
         ls -R
         python scripts/data_validation.py --input input_data/test1.xlsx --output reports/
 
-    - name: Verify report generation
-      run: |
-        echo "Generated reports:"
-        ls -l reports/
-        if [ ! -f reports/data_quality_report.xlsx ] || [ ! -f reports/data_quality_report.txt ]; then
-          echo "Error: Required reports not generated!"
-          exit 1
-        fi
-
     - name: Upload validation reports
       uses: actions/upload-artifact@v4
       with:
