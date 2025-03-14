@@ -25,7 +25,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-dev python3.12-venv
+        sudo apt-get install -y python3-dev python3.12-venv libgomp1
 
     - name: Install Java for PySpark
       uses: actions/setup-java@v3
@@ -37,15 +37,18 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel
-        pip install pyspark==3.5.0 pandas==2.2.1 numpy==1.26.4 openpyxl==3.1.2
+        pip install pyspark==3.5.0 pandas==2.2.1 numpy==1.26.4 openpyxl==3.1.2 xlsxwriter==3.2.0
 
     - name: Prepare data directory
       run: |
         mkdir -p input_data
-        # Copy test data from repository
-        cp -v data/test1.xlsx input_data/ || echo "No local data file found"
-        # Alternative download (uncomment if needed):
-        # curl -o input_data/test1.xlsx https://your-data-source/test1.xlsx
+        # Copy test data from repository or download
+        if [ -f data/test1.xlsx ]; then
+          cp -v data/test1.xlsx input_data/
+        else
+          echo "No local data file found, attempting download..."
+          curl -o input_data/test1.xlsx https://your-data-source/test1.xlsx || exit 1
+        fi
 
     - name: Create reports directory
       run: mkdir -p reports
@@ -54,24 +57,38 @@ jobs:
       run: |
         echo "Current directory structure:"
         ls -R
-        python scripts/data_validation.py
+        python scripts/data_validation.py --input input_data/test1.xlsx --output reports/
+
+    - name: Verify report generation
+      run: |
+        echo "Generated reports:"
+        ls -l reports/
+        if [ ! -f reports/data_quality_report.xlsx ] || [ ! -f reports/data_quality_report.txt ]; then
+          echo "Error: Required reports not generated!"
+          exit 1
+        fi
 
     - name: Upload validation reports
       uses: actions/upload-artifact@v4
       with:
         name: validation-reports
         path: |
-          reports/*.xlsx
-          reports/*.txt
+          reports/data_quality_report.xlsx
+          reports/data_quality_report.txt
+          reports/missing_values_report.xlsx
         if-no-files-found: error
+        compression-level: 6
+        retention-days: 7
 
     - name: Check validation status
       id: check_status
       run: |
         if grep -q "Status: FAILED" reports/data_quality_report.txt; then
           echo "VALIDATION_FAILED=true" >> $GITHUB_ENV
+          echo "::error::Data validation failed - check reports for details"
         else
           echo "VALIDATION_FAILED=false" >> $GITHUB_ENV
+          echo "::notice::Data validation completed successfully"
         fi
         
     - name: Send notification on failure
@@ -83,7 +100,6 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             title: 'Data Validation Failed',
-            body: 'The data validation pipeline detected issues. Please check the latest workflow run for details.'
+            body: 'The data validation pipeline detected issues. Please check the [latest workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
           })
-
-
+            
