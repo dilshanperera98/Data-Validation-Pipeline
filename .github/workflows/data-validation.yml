@@ -47,7 +47,7 @@ jobs:
           cp -v data/test1.xlsx input_data/
         else
           echo "No local data file found, attempting download..."
-          curl -o input_data/test1.xlsx https://your-data-source/test1.xlsx || exit 1
+          curl -o input_data/test1.xlsx https://example.com/test1.xlsx || exit 1  # Replace with actual data source URL
         fi
 
     - name: Create reports directory
@@ -102,4 +102,3 @@ jobs:
             title: 'Data Validation Failed',
             body: 'The data validation pipeline detected issues. Please check the [latest workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
           })
-            
