@@ -149,4 +149,4 @@ if __name__ == "__main__":
     #input_file = "/Users/dilshanperera/Desktop/data_quality_pipeline/input_data/test1.xlsx"
     # Change this in your main function
     input_file = "input_data/test1.xlsx"
-    main(input_file)       
+    main(input_file) 
