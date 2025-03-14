@@ -1,0 +1,78 @@
+name: Data Validation Pipeline
+
+on:
+  # Run on push to main branch
+  push:
+    branches: [ main ]
+  # Run on pull requests to main
+  pull_request:
+    branches: [ main ]
+  # Allow manual trigger
+  workflow_dispatch:
+  # Run on a schedule (daily at midnight UTC)
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  data-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+        
+    - name: Install Java for PySpark
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyspark pandas numpy openpyxl
+        
+    - name: Run data validation
+      run: |
+        mkdir -p input_data
+        # If your data is stored in the repo, you can skip the following commented section
+        # Download data files (examples below, modify as needed)
+        # curl -o input_data/test1.xlsx https://your-storage-url/test1.xlsx
+        python scripts/data_validation.py
+        
+    - name: Upload validation reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: validation-reports
+        path: |
+          input_data/reports/*.xlsx
+          input_data/reports/*.txt
+          
+    # Optional: Send notification if validation fails
+    - name: Check validation status
+      id: check_status
+      run: |
+        if grep -q "Status: FAILED" input_data/reports/data_quality_report.txt; then
+          echo "VALIDATION_FAILED=true" >> $GITHUB_ENV
+        else
+          echo "VALIDATION_FAILED=false" >> $GITHUB_ENV
+        fi
+        
+    - name: Send notification on failure
+      if: env.VALIDATION_FAILED == 'true'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Data Validation Failed',
+            body: 'The data validation pipeline detected issues. Please check the latest workflow run for details.'
+          })
+            

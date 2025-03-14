@@ -1,0 +1,60 @@
+Data Quality Report - test1.xlsx
+----------------------------------------
+Total Records: 10000
+Missing Values: 155721
+Duplicate Records: 491
+Schema Errors: whiteboard_one-to-one_web-readiness: Contains 3625 non-numeric values; extend_efficient_action-items: Contains 3611 non-numeric values; enhance_global_platforms: Contains 3586 non-numeric values; innovate_e-business_applications: Contains 3610 non-numeric values; brand_robust_web-readiness: Contains 3616 non-numeric values; evolve_killer_e-services: Contains 3541 non-numeric values; deliver_proactive_schemas: Contains 3524 non-numeric values; aggregate_next-generation_e-services: Contains 3576 non-numeric values; grow_efficient_synergies: Contains 3622 non-numeric values; engineer_granular_e-commerce: Contains 3528 non-numeric values; facilitate_efficient_eyeballs: Contains 3525 non-numeric values; architect_cross-platform_platforms: Contains 3515 non-numeric values; evolve_enterprise_platforms: Contains 3554 non-numeric values; seize_cross-media_metrics: Contains 3625 non-numeric values; morph_revolutionary_bandwidth: Contains 3564 non-numeric values; incubate_24/7_architectures: Contains 3611 non-numeric values; evolve_distributed_functionalities: Contains 3548 non-numeric values; re-intermediate_bricks-and-clicks_networks: Contains 3498 non-numeric values; aggregate_innovative_paradigms: Contains 3632 non-numeric values; repurpose_bleeding-edge_technologies: Contains 3536 non-numeric values; evolve_bleeding-edge_platforms: Contains 3535 non-numeric values; synergize_efficient_bandwidth: Contains 3562 non-numeric values; whiteboard_bricks-and-clicks_communities: Contains 3567 non-numeric values; disintermediate_synergistic_e-tailers: Contains 3618 non-numeric values; repurpose_real-time_methodologies: Contains 3549 non-numeric values; visualize_intuitive_metrics: Contains 3597 non-numeric values; whiteboard_frictionless_users: Contains 3664 non-numeric values; drive_interactive_communities: Contains 3566 non-numeric values; target_enterprise_niches: Contains 3596 non-numeric values; re-contextualize_magnetic_methodologies: Contains 3615 non-numeric values; harness_leading-edge_e-services: Contains 3574 non-numeric values; transition_robust_vortals: Contains 3600 non-numeric values; strategize_real-time_partnerships: Contains 3536 non-numeric values; architect_turn-key_e-tailers: Contains 3515 non-numeric values; visualize_rich_interfaces: Contains 3553 non-numeric values; matrix_ubiquitous_eyeballs: Contains 3573 non-numeric values; morph_global_action-items: Contains 3596 non-numeric values; extend_back-end_applications: Contains 3510 non-numeric values; brand_wireless_relationships: Contains 3567 non-numeric values; enhance_global_mindshare: Contains 3575 non-numeric values; synthesize_e-business_markets: Contains 3460 non-numeric values; cultivate_one-to-one_eyeballs: Contains 3639 non-numeric values; whiteboard_granular_methodologies: Contains 3697 non-numeric values; brand_innovative_architectures: Contains 3582 non-numeric values; synergize_plug-and-play_deliverables: Contains 3592 non-numeric values; morph_value-added_methodologies: Contains 3481 non-numeric values; drive_one-to-one_methodologies: Contains 3669 non-numeric values; matrix_real-time_experiences: Contains 3644 non-numeric values; facilitate_one-to-one_technologies: Contains 3631 non-numeric values; brand_granular_bandwidth: Contains 3645 non-numeric values; Category: Contains 6458 non-numeric values
+Status: FAILED
+
+Schema Error Details:
+- whiteboard_one-to-one_web-readiness: Contains 3625 non-numeric values
+- extend_efficient_action-items: Contains 3611 non-numeric values
+- enhance_global_platforms: Contains 3586 non-numeric values
+- innovate_e-business_applications: Contains 3610 non-numeric values
+- brand_robust_web-readiness: Contains 3616 non-numeric values
+- evolve_killer_e-services: Contains 3541 non-numeric values
+- deliver_proactive_schemas: Contains 3524 non-numeric values
+- aggregate_next-generation_e-services: Contains 3576 non-numeric values
+- grow_efficient_synergies: Contains 3622 non-numeric values
+- engineer_granular_e-commerce: Contains 3528 non-numeric values
+- facilitate_efficient_eyeballs: Contains 3525 non-numeric values
+- architect_cross-platform_platforms: Contains 3515 non-numeric values
+- evolve_enterprise_platforms: Contains 3554 non-numeric values
+- seize_cross-media_metrics: Contains 3625 non-numeric values
+- morph_revolutionary_bandwidth: Contains 3564 non-numeric values
+- incubate_24/7_architectures: Contains 3611 non-numeric values
+- evolve_distributed_functionalities: Contains 3548 non-numeric values
+- re-intermediate_bricks-and-clicks_networks: Contains 3498 non-numeric values
+- aggregate_innovative_paradigms: Contains 3632 non-numeric values
+- repurpose_bleeding-edge_technologies: Contains 3536 non-numeric values
+- evolve_bleeding-edge_platforms: Contains 3535 non-numeric values
+- synergize_efficient_bandwidth: Contains 3562 non-numeric values
+- whiteboard_bricks-and-clicks_communities: Contains 3567 non-numeric values
+- disintermediate_synergistic_e-tailers: Contains 3618 non-numeric values
+- repurpose_real-time_methodologies: Contains 3549 non-numeric values
+- visualize_intuitive_metrics: Contains 3597 non-numeric values
+- whiteboard_frictionless_users: Contains 3664 non-numeric values
+- drive_interactive_communities: Contains 3566 non-numeric values
+- target_enterprise_niches: Contains 3596 non-numeric values
+- re-contextualize_magnetic_methodologies: Contains 3615 non-numeric values
+- harness_leading-edge_e-services: Contains 3574 non-numeric values
+- transition_robust_vortals: Contains 3600 non-numeric values
+- strategize_real-time_partnerships: Contains 3536 non-numeric values
+- architect_turn-key_e-tailers: Contains 3515 non-numeric values
+- visualize_rich_interfaces: Contains 3553 non-numeric values
+- matrix_ubiquitous_eyeballs: Contains 3573 non-numeric values
+- morph_global_action-items: Contains 3596 non-numeric values
+- extend_back-end_applications: Contains 3510 non-numeric values
+- brand_wireless_relationships: Contains 3567 non-numeric values
+- enhance_global_mindshare: Contains 3575 non-numeric values
+- synthesize_e-business_markets: Contains 3460 non-numeric values
+- cultivate_one-to-one_eyeballs: Contains 3639 non-numeric values
+- whiteboard_granular_methodologies: Contains 3697 non-numeric values
+- brand_innovative_architectures: Contains 3582 non-numeric values
+- synergize_plug-and-play_deliverables: Contains 3592 non-numeric values
+- morph_value-added_methodologies: Contains 3481 non-numeric values
+- drive_one-to-one_methodologies: Contains 3669 non-numeric values
+- matrix_real-time_experiences: Contains 3644 non-numeric values
+- facilitate_one-to-one_technologies: Contains 3631 non-numeric values
+- brand_granular_bandwidth: Contains 3645 non-numeric values
+- Category: Contains 6458 non-numeric values
