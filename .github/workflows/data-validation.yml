@@ -51,13 +51,21 @@ jobs:
         fi
 
     - name: Create reports directory
-      run: mkdir -p reports
+      run: |
+        mkdir -p reports
+        echo "Reports directory created: $(ls -l reports)"
 
     - name: Run data validation
       run: |
         echo "Current directory structure:"
         ls -R
         python scripts/data_validation.py --input input_data/test1.xlsx --output reports/
+        echo "Generated reports:"
+        ls -l reports/
+        if [ ! -f reports/data_quality_report.xlsx ] || [ ! -f reports/data_quality_report.txt ]; then
+          echo "Error: Required reports not generated!"
+          exit 1
+        fi
 
     - name: Upload validation reports
       uses: actions/upload-artifact@v4
@@ -93,7 +101,3 @@ jobs:
             title: 'Data Validation Failed',
             body: 'The data validation pipeline detected issues. Please check the [latest workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
           })
-
-
-
-
