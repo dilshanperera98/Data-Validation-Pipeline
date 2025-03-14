@@ -25,7 +25,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.12'
-        cache: 'pip'
+        # Removed the cache option
         
     - name: Install Java for PySpark
       uses: actions/setup-java@v3
@@ -75,3 +75,4 @@ jobs:
             title: 'Data Validation Failed',
             body: 'The data validation pipeline detected issues. Please check the latest workflow run for details.'
           })
+            
