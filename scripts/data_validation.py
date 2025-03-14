@@ -2,6 +2,7 @@ import zipfile
 import pandas as pd
 import os
 import logging
+import argparse
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -54,8 +55,35 @@ def generate_reports(df, output_dir):
         missing_values = df.isnull().sum()
         text_report_path = os.path.join(output_dir, 'data_quality_report.txt')
         with open(text_report_path, 'w') as f:
+            f.write("Data Quality Report\n")
+            f.write("==================\n\n")
+            f.write(f"Total rows: {len(df)}\n")
+            f.write(f"Total columns: {len(df.columns)}\n\n")
             f.write("Missing values per column:\n")
-            f.write(missing_values.to_string())
+            f.write(missing_values.to_string() + "\n\n")
+            
+            # Add percentage of missing values
+            missing_percent = (missing_values / len(df) * 100).round(2)
+            f.write("Percentage of missing values per column:\n")
+            f.write(missing_percent.to_string() + "%\n\n")
+            
+            # Determine validation status
+            threshold = 10  # If any column has more than 10% missing values, fail validation
+            validation_failed = any(missing_percent > threshold)
+            f.write(f"Status: {'FAILED' if validation_failed else 'PASSED'}\n")
+            if validation_failed:
+                f.write(f"Reason: One or more columns have more than {threshold}% missing values.\n")
+        
+        # Create a missing values specific report
+        missing_df = pd.DataFrame({
+            'Column': df.columns,
+            'Missing Values': missing_values.values,
+            'Missing Percentage': missing_percent.values
+        })
+        missing_report_path = os.path.join(output_dir, 'missing_values_report.xlsx')
+        missing_df.to_excel(missing_report_path, index=False)
+        logging.info(f"Missing values report saved to {missing_report_path}")
+        
         logging.info(f"Text report saved to {text_report_path}")
     except Exception as e:
         logging.error(f"Error generating reports: {e}")
@@ -69,22 +97,28 @@ def main(input_file, output_dir):
     pandas_df = read_excel(input_file)
     if pandas_df is None:
         logging.error("Exiting due to error while reading file.")
-        return
+        return 1
 
-    # Process the DataFrame (this is just an example, adjust it as needed)
-    logging.info(f"File loaded successfully with {len(pandas_df)} rows.")
+    # Process the DataFrame
+    logging.info(f"File loaded successfully with {len(pandas_df)} rows and {len(pandas_df.columns)} columns.")
 
     # Generate the reports (both Excel and text)
     generate_reports(pandas_df, output_dir)
+    logging.info("Data validation completed successfully.")
+    return 0
 
 if __name__ == "__main__":
-    # Example input file path, you can adjust this as needed
-    input_file = 'input_data/test1.xlsx'
-    output_dir = 'reports/'
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Validate Excel data file and generate reports.')
+    parser.add_argument('--input', default='input_data/test1.xlsx', help='Path to the input Excel file')
+    parser.add_argument('--output', default='reports/', help='Directory to save reports')
+    args = parser.parse_args()
     
     # Ensure the output directory exists
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-        logging.info(f"Created reports directory at {output_dir}")
+    if not os.path.exists(args.output):
+        os.makedirs(args.output)
+        logging.info(f"Created reports directory at {args.output}")
 
-    main(input_file, output_dir)
+    exit_code = main(args.input, args.output)
+    exit(exit_code)
+    

@@ -48,15 +48,39 @@ jobs:
           unzip -t data/test1.xlsx || { echo "Corrupted Excel file in repository!"; exit 1; }
           cp -v data/test1.xlsx input_data/
         else
-          echo "No local data file found, attempting download..."
-          curl -o input_data/test1.xlsx https://your-actual-data-source.com/real-data.xlsx || exit 1
+          echo "No local data file found, creating a sample Excel file..."
           
-          echo "Validating downloaded file:"
+          # Generate a sample Excel file with Python
+          python -c "
+import pandas as pd
+import numpy as np
+
+# Create sample data
+data = {
+    'ID': range(1, 101),
+    'Name': ['Sample_' + str(i) for i in range(1, 101)],
+    'Value': np.random.rand(100) * 100,
+    'Category': np.random.choice(['A', 'B', 'C', 'D'], 100),
+    'Date': pd.date_range(start='2023-01-01', periods=100)
+}
+
+# Create a few missing values
+df = pd.DataFrame(data)
+for col in df.columns:
+    mask = np.random.random(len(df)) < 0.05
+    df.loc[mask, col] = None
+
+# Save to Excel
+df.to_excel('input_data/test1.xlsx', index=False)
+print('Sample Excel file created successfully')
+          "
+          
+          echo "Validating generated file:"
           ls -lh input_data/
           
           # Check if file has valid content
           if [ $(stat -c%s input_data/test1.xlsx) -lt 1024 ]; then
-            echo "Error: Downloaded file is too small (might be HTML error page)"
+            echo "Error: Generated file is too small"
             exit 1
           fi
           
@@ -64,7 +88,7 @@ jobs:
           file --mime-type input_data/test1.xlsx
           
           echo "Verifying Excel file integrity..."
-          unzip -t input_data/test1.xlsx || { echo "Downloaded file is corrupted or not a valid Excel file!"; exit 1; }
+          unzip -t input_data/test1.xlsx || { echo "Generated file is corrupted or not a valid Excel file!"; exit 1; }
         fi
 
     - name: Create reports directory
@@ -125,3 +149,4 @@ jobs:
             title: 'Data Validation Failed',
             body: 'The data validation pipeline detected issues. Please check the [latest workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
           })
+            
