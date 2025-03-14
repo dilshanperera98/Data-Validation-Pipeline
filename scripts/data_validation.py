@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+import argparse
 import subprocess
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, count, when, regexp_replace
@@ -11,6 +12,10 @@ try:
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools"])
     from distutils.version import LooseVersion
+parser = argparse.ArgumentParser()
+parser.add_argument('--input', required=True)
+parser.add_argument('--output', required=True)
+args = parser.parse_args()    
 
 def read_excel(file_path):
     """Read Excel file into Spark DataFrame with proper null handling"""
