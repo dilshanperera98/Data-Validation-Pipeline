@@ -4,7 +4,7 @@ import os
 import logging
 
 # Set up logging
-logging.basicConfig(level=logging.WARN, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def is_valid_xlsx(file_path):
     """Check if the file is a valid .xlsx file by trying to open it as a ZIP archive."""
