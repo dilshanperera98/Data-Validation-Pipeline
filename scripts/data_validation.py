@@ -42,7 +42,26 @@ def read_excel(file_path):
         logging.error(f"Error while reading the Excel file {file_path}: {e}")
         return None
 
-def main(input_file):
+def generate_reports(df, output_dir):
+    """Generate the data quality reports (both Excel and TXT)."""
+    try:
+        # Save the DataFrame to Excel
+        excel_report_path = os.path.join(output_dir, 'data_quality_report.xlsx')
+        df.to_excel(excel_report_path, index=False)
+        logging.info(f"Excel report saved to {excel_report_path}")
+        
+        # Generate a text report of missing values
+        missing_values = df.isnull().sum()
+        text_report_path = os.path.join(output_dir, 'data_quality_report.txt')
+        with open(text_report_path, 'w') as f:
+            f.write("Missing values per column:\n")
+            f.write(missing_values.to_string())
+        logging.info(f"Text report saved to {text_report_path}")
+    except Exception as e:
+        logging.error(f"Error generating reports: {e}")
+        raise
+
+def main(input_file, output_dir):
     """Main function for validating the Excel file and processing it."""
     logging.info(f"Validating file: {input_file}")
 
@@ -55,16 +74,17 @@ def main(input_file):
     # Process the DataFrame (this is just an example, adjust it as needed)
     logging.info(f"File loaded successfully with {len(pandas_df)} rows.")
 
-    # You can add your logic for processing the DataFrame here (e.g., checking for missing values)
-    missing_values = pandas_df.isnull().sum()
-    logging.info(f"Missing values per column: {missing_values}")
-
-    # Output your report (example of saving a report)
-    output_report_path = "reports/data_quality_report.xlsx"
-    pandas_df.to_excel(output_report_path, index=False)
-    logging.info(f"Data quality report saved to {output_report_path}")
+    # Generate the reports (both Excel and text)
+    generate_reports(pandas_df, output_dir)
 
 if __name__ == "__main__":
     # Example input file path, you can adjust this as needed
     input_file = 'input_data/test1.xlsx'
-    main(input_file)
+    output_dir = 'reports/'
+    
+    # Ensure the output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        logging.info(f"Created reports directory at {output_dir}")
+
+    main(input_file, output_dir)
