@@ -1,9 +1,11 @@
 import sys
+import argparse
 import pandas as pd
 import numpy as np
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
 import zipfile
+import os
 
 def is_valid_xlsx(file_path):
     """Check if the file is a valid .xlsx file by trying to open it as a ZIP archive."""
@@ -12,11 +14,13 @@ def is_valid_xlsx(file_path):
             # Check if it contains the expected structure for an .xlsx file
             file_list = zip_ref.namelist()
             if 'xl/workbook.xml' in file_list:
-                return True
+                return True, "Valid XLSX file"
             else:
-                return False
+                return False, "Missing 'xl/workbook.xml' in XLSX structure"
     except zipfile.BadZipFile:
-        return False
+        return False, "File is not a valid ZIP archive (corrupt or not an XLSX)"
+    except Exception as e:
+        return False, f"Error checking XLSX validity: {str(e)}"
 
 def read_excel(file_path):
     """Read Excel file into Spark DataFrame with proper null handling"""
@@ -25,9 +29,15 @@ def read_excel(file_path):
         .config("spark.sql.execution.arrow.pyspark.enabled", "false") \
         .getOrCreate()
 
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        print(f"Error: The file {file_path} does not exist.")
+        sys.exit(1)
+
     # Check if the file is a valid .xlsx file
-    if not is_valid_xlsx(file_path):
-        print(f"Error: The file {file_path} is not a valid .xlsx file.")
+    valid_xlsx, message = is_valid_xlsx(file_path)
+    if not valid_xlsx:
+        print(f"Error: {message}")
         sys.exit(1)
 
     try:
@@ -37,7 +47,7 @@ def read_excel(file_path):
         print(f"Error reading the Excel file: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        print(f"Unexpected error reading Excel file: {e}")
         sys.exit(1)
 
     # Replace NaN with None for proper null handling
@@ -52,9 +62,12 @@ def read_excel(file_path):
 
     return spark_df, pandas_df
 
-def validate_data(spark_df, pandas_df):
-    """Perform data validation checks"""
+def validate_data(spark_df, pandas_df, output_dir):
+    """Perform data validation checks and generate reports"""
     print("Performing data validation...")
+
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
 
     # Example data validation: Check for missing values in Spark DataFrame
     missing_values_spark = spark_df.filter(spark_df.isNull().any()).count()
@@ -62,20 +75,30 @@ def validate_data(spark_df, pandas_df):
 
     print(f"Missing values in Spark DataFrame: {missing_values_spark}")
     print(f"Missing values in Pandas DataFrame:\n{missing_values_pandas}")
-    
-    # Add other validation checks here as needed
 
-def main(input_file):
+    # Generate report
+    report_path = os.path.join(output_dir, "validation_report.txt")
+    with open(report_path, 'w') as f:
+        f.write(f"Missing values count (Spark): {missing_values_spark}\n")
+        f.write("Missing values summary (Pandas):\n")
+        f.write(missing_values_pandas.to_string())
+    
+    print(f"Validation report generated at: {report_path}")
+
+def main():
     """Main entry point for data validation pipeline"""
-    print(f"Validating file: {input_file}")
+    parser = argparse.ArgumentParser(description='Data validation tool for XLSX files')
+    parser.add_argument('--input', required=True, help='Input XLSX file path')
+    parser.add_argument('--output', required=True, help='Output directory for reports')
+    args = parser.parse_args()
+
+    print(f"Validating file: {args.input}")
     
     # Read Excel file
-    spark_df, pandas_df = read_excel(input_file)
+    spark_df, pandas_df = read_excel(args.input)
 
-    # Validate the data
-    validate_data(spark_df, pandas_df)
+    # Validate the data and generate reports
+    validate_data(spark_df, pandas_df, args.output)
 
 if __name__ == "__main__":
-    # Input file for validation
-    input_file = "input_data/test1.xlsx"  # Update path as necessary
-    main(input_file)
+    main()
