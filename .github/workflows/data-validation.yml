@@ -25,7 +25,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-dev python3.12-venv libgomp1 unzip
+        sudo apt-get install -y python3-dev python3.12-venv libgomp1 unzip file
 
     - name: Install Java for PySpark
       uses: actions/setup-java@v3
@@ -49,9 +49,22 @@ jobs:
           cp -v data/test1.xlsx input_data/
         else
           echo "No local data file found, attempting download..."
-          curl -o input_data/test1.xlsx https://example.com/test1.xlsx || exit 1
-          echo "Verifying downloaded Excel file integrity..."
-          unzip -t input_data/test1.xlsx || { echo "Downloaded file is corrupted!"; exit 1; }
+          curl -o input_data/test1.xlsx https://your-actual-data-source.com/real-data.xlsx || exit 1
+          
+          echo "Validating downloaded file:"
+          ls -lh input_data/
+          
+          # Check if file has valid content
+          if [ $(stat -c%s input_data/test1.xlsx) -lt 1024 ]; then
+            echo "Error: Downloaded file is too small (might be HTML error page)"
+            exit 1
+          fi
+          
+          echo "Verifying file type:"
+          file --mime-type input_data/test1.xlsx
+          
+          echo "Verifying Excel file integrity..."
+          unzip -t input_data/test1.xlsx || { echo "Downloaded file is corrupted or not a valid Excel file!"; exit 1; }
         fi
 
     - name: Create reports directory
@@ -65,10 +78,10 @@ jobs:
         ls -R
         python scripts/data_validation.py --input input_data/test1.xlsx --output reports/
         
-        # Workaround for potential script output directory issue
+        # Ensure reports are in correct location
         if [ -d input_data/reports ]; then
-          echo "Moving reports from input_data/reports to main reports directory"
-          mv input_data/reports/* reports/ || true
+          echo "Moving misplaced reports to correct directory"
+          mv input_data/reports/* reports/ 2>/dev/null || true
         fi
 
         echo "Generated reports:"
