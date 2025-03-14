@@ -42,12 +42,13 @@ jobs:
     - name: Prepare data directory
       run: |
         mkdir -p input_data
-        # Copy test data from repository or download
-        if [ -f data/test1.xlsx ]; then
-          cp -v data/test1.xlsx input_data/
+        # Generate test data if not exists
+        if [ ! -f data/test1.xlsx ]; then
+          echo "Generating sample Excel file..."
+          python -c "import pandas as pd; pd.DataFrame({'Name': ['Alice', 'Bob'], 'Age': [25, 30]}).to_excel('input_data/test1.xlsx', index=False)"
         else
-          echo "No local data file found, attempting download..."
-          curl -o input_data/test1.xlsx https://example.com/test1.xlsx || exit 1  # Replace with actual data source URL
+          echo "Using existing test file"
+          cp -v data/test1.xlsx input_data/
         fi
 
     - name: Create reports directory
@@ -93,8 +94,3 @@ jobs:
             title: 'Data Validation Failed',
             body: 'The data validation pipeline detected issues. Please check the [latest workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
           })
-
-
-
-
-          
