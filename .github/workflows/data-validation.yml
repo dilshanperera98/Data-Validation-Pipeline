@@ -3,7 +3,7 @@ name: Data Validation Pipeline
 on:
   push:
     branches: [ main ]
-  pull_request:
+  pull_request: 
     branches: [ main ]
   workflow_dispatch:
   schedule:
