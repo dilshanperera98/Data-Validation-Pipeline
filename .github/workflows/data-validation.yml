@@ -47,7 +47,7 @@ jobs:
         python scripts/data_validation.py
         
     - name: Upload validation reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: validation-reports
         path: |
@@ -75,4 +75,3 @@ jobs:
             title: 'Data Validation Failed',
             body: 'The data validation pipeline detected issues. Please check the latest workflow run for details.'
           })
-            
