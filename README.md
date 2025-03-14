@@ -10,7 +10,7 @@ Key Objectives
 ✅ Fail Safely: Halt pipelines and notify teams on critical data issues.
 ✅ Integrate with DevOps: Embed data quality checks into standard development workflows.
 
-Core Features :
+Core Features : 
 Feature	                   Description
 Dual File Validation	     Checks both ZIP structure and Excel readability using openpyxl
 Missing Value Analysis	   Flags columns with >10% missing data (configurable)
