@@ -41,3 +41,4 @@ Traditional data validation often involves:
 ✅ **Consistency**: Same checks run locally and in CI/CD.  
 ✅ **Cost Reduction**: Automate repetitive validation tasks.  
 ✅ **Scalability**: Easy to add new validation rules.  
+
